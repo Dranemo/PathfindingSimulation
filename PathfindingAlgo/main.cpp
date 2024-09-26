@@ -1,5 +1,5 @@
 
-#include "WindowManager.h" 
+#include "Grid.h"
 
 
 
@@ -7,18 +7,16 @@
 
 int main()
 {
-    WindowManager windowManager;
-    windowManager.CreateWindow();
+    WindowManager* windowManager = WindowManager::GetInstance();
+    windowManager->CreateWindow();
 
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    Grid grid;
 
-    windowManager.AddDrawable(&shape);
 
-    while (windowManager.window.isOpen())
+    while (windowManager->window.isOpen())
     {
-        windowManager.Update();
+        windowManager->Update();
     }
 
     return 0;
-}
+} 
