@@ -3,22 +3,63 @@
 
 class Node
 {
-private:
-	bool isFinish = false;
-	bool isStart = false;
+public:
+	enum State {
+		finish,
+		start,
+		visited,
+		wall,
+		defaultState,
+	};
 
-	bool visited = false;
+private:
+
+	State state = State::defaultState;
 
 
 public:
-	Node(int i, int ii) {
-		square = new sf::RectangleShape(sf::Vector2f(50, 50));
-		square->setFillColor(sf::Color::White);
 
+	static sf::Vector2f sizeNode;
+
+	Node(int i, int ii) {
+		square = new sf::RectangleShape(sizeNode);
+		square->setFillColor(sf::Color::White);
 
 		weight = 1;
 		positionInMatrice = sf::Vector2i(i, ii);
-		square->setPosition((i) * 50, (ii) * 50);
+		square->setPosition((i) * sizeNode.x, (ii) * sizeNode.y);
+	}
+
+	void Update() {
+		switch (state)
+		{
+		case State::defaultState:
+			square->setFillColor(sf::Color::White);
+			break;
+
+		case State::finish:
+			square->setFillColor(sf::Color::Red);
+			break;
+
+		case State::start:
+			square->setFillColor(sf::Color::Blue);
+			break;
+
+		case State::wall:
+			square->setFillColor(sf::Color::Black);
+			break;
+
+		case State::visited:
+			square->setFillColor(sf::Color::Green);
+			break;
+		}
+	}
+
+
+	
+
+	void SetState(State state) {
+		this->state = state;
 	}
 
 	float weight;

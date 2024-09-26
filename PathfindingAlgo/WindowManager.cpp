@@ -1,6 +1,7 @@
 #include "WindowManager.h"
 
 WindowManager* WindowManager::instance = nullptr;
+sf::Vector2f WindowManager::windowSize = sf::Vector2f(900, 900);
 
 void WindowManager::CreateWindow() {
 	window.create(sf::VideoMode(900, 900), "SFML works!");

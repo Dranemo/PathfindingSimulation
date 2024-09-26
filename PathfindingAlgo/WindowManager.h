@@ -5,12 +5,14 @@
 class WindowManager
 {
 private:
+
 	std::vector<sf::Drawable*> drawables;
 	std::vector<sf::Vertex> lines;
 
 	static WindowManager* instance;
 
 public:
+	static sf::Vector2f windowSize;
 	sf::RenderWindow window;
 
 	static WindowManager* GetInstance() {
