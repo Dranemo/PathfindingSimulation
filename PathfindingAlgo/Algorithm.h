@@ -17,6 +17,8 @@ private:
 	static void GetWalls(Grid* grid);
 
 public:
+	static bool threadOn;
+
 	static void DFS(Grid* grid);
 
 	static void BFS(Grid* grid);

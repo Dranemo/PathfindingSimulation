@@ -1,47 +1,73 @@
 #include "Algorithm.h"
 #include <thread>
 #include <chrono>
+#include <iostream>
 
 #include "Grid.h"
 #include "Node.h"
 
 Node* Algorithm::visitingNode = nullptr;
+bool Algorithm::threadOn = false;
+std::vector<Node*> Algorithm::serchingQueue;
+std::vector<Node*> Algorithm::path;
+std::vector<Node*> Algorithm::walls;
 
 
 void Algorithm::DFS(Grid* grid) {
+	threadOn = true;
 	GetWalls(grid);
 	
 	visitingNode = grid->GetStartNode();
+	grid->SetNeighbourNodes(visitingNode);
 
+	// Calcul du path (affichage vert)
 	while (visitingNode != grid->GetFinishNode()) {
-		grid->SetNeighbourNodes(visitingNode);
 
-		for (Node* n : visitingNode->GetChilds())
-			serchingQueue.push_back(n);
+		if (!visitingNode->GetChilds().empty()) {
+			bool allVisited = true;
 
-		for (int i = serchingQueue.size() - 1; i >= 0; i--) {
-			if (serchingQueue[i]->GetChilds().empty()) {
-				serchingQueue.pop_back();
+			for (Node* n : visitingNode->GetChilds()) {
+				if (n->GetState() != Node::visited) {
+					serchingQueue.push_back(n);
+					allVisited = false;
+				}
+			}
+
+			if (!allVisited) {
+				Node* newNode = serchingQueue[serchingQueue.size() - 1];
+
+				newNode->SetParent(visitingNode);
+				grid->SetNeighbourNodes(newNode);
+
+				visitingNode = newNode;
+				if(visitingNode != grid->GetFinishNode())
+					visitingNode->SetState(Node::visited);
+
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			}
 			else {
-				serchingQueue[i]->SetParent(visitingNode);
-				visitingNode = serchingQueue[i];
-				visitingNode->SetState(Node::visited);
-				break;
+				visitingNode = visitingNode->GetParent();
+				serchingQueue.pop_back();
 			}
 
+
 		}
+
 	}
 
+	// Retour au début et vector path
 	while (visitingNode != grid->GetStartNode()) {
 		path.push_back(visitingNode);
 		visitingNode = visitingNode->GetParent();
 	}
 
+	// Affichage du path
 	for (int i = path.size() - 1; i >= 0; i--) {
 		path[i]->SetState(Node::path);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
+
+	threadOn = false;
 }
 
 

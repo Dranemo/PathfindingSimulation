@@ -1,6 +1,8 @@
 #include "Grid.h"
 #include "Algorithm.h"
 
+#include <thread>
+
 Grid::Grid() {
 	wm = WindowManager::GetInstance();
 
@@ -47,7 +49,7 @@ void Grid::SetFinishNode(int x, int y) {
 
 void Grid::Update() {
 	sf::Event event;
-	while (wm->window.pollEvent(event))
+	while (wm->window.pollEvent(event) && Algorithm::threadOn == false)
 	{
 		if (event.type == sf::Event::MouseButtonPressed) {
 			mousePressed = true;
@@ -69,7 +71,9 @@ void Grid::Update() {
 			// Vérifier si la touche 'P' est pressée
 			if (event.key.code == sf::Keyboard::P)
 			{
-				Algorithm::DFS(this);
+				// Lancer DFS dans un nouveau thread, en passant `this` (instance de Grid) comme argument
+				std::thread t(&Algorithm::DFS, this);
+				t.detach();  // Détacher le thread si vous ne voulez pas attendre qu'il se termine
 			}
 		}
 	}
@@ -142,27 +146,27 @@ void Grid::SetNodeStateMouse(sf::Vector2i mousePos) {
 
 
 void Grid::SetNeighbourNodes(Node* node) {
-	std::vector<Node*> returnVector;
+	std::vector<Node*> returnVector = {};
 
 	sf::Vector2i nodePos = node->positionInMatrice;
 
 	if (nodePos.x > 0) {
-		if (grid[nodePos.x - 1][nodePos.y]->GetState() != Node::wall || grid[nodePos.x - 1][nodePos.y]->GetState() != Node::visited)
+		if (grid[nodePos.x - 1][nodePos.y]->GetState() != Node::wall)
 			returnVector.push_back(grid[nodePos.x - 1][nodePos.y]);
 	}
 
-	if (nodePos.x < rowsNum) {
-		if (grid[nodePos.x + 1][nodePos.y]->GetState() != Node::wall || grid[nodePos.x + 1][nodePos.y]->GetState() != Node::visited)
+	if (nodePos.x < rowsNum -1) {
+		if (grid[nodePos.x + 1][nodePos.y]->GetState() != Node::wall)
 			returnVector.push_back(grid[nodePos.x + 1][nodePos.y]);
 	}
 
 	if (nodePos.y > 0) {
-		if (grid[nodePos.x][nodePos.y - 1]->GetState() != Node::wall || grid[nodePos.x][nodePos.y - 1]->GetState() != Node::visited)
+		if (grid[nodePos.x][nodePos.y - 1]->GetState() != Node::wall)
 			returnVector.push_back(grid[nodePos.x][nodePos.y - 1]);
 	}
 
-	if (nodePos.y < ColNums) {
-		if (grid[nodePos.x][nodePos.y + 1]->GetState() != Node::wall || grid[nodePos.x][nodePos.y + 1]->GetState() != Node::visited)
+	if (nodePos.y < ColNums -1) {
+		if (grid[nodePos.x][nodePos.y + 1]->GetState() != Node::wall)
 			returnVector.push_back(grid[nodePos.x][nodePos.y + 1]);
 	}
 
