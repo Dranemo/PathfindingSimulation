@@ -1,4 +1,5 @@
 #include "Grid.h"
+#include "Algorithm.h"
 
 Grid::Grid() {
 	wm = WindowManager::GetInstance();
@@ -61,6 +62,15 @@ void Grid::Update() {
 			creatingWalls = false;
 
 			lastNodeStateChange = nullptr;
+		}
+
+		if (event.type == sf::Event::KeyPressed)
+		{
+			// Vérifier si la touche 'P' est pressée
+			if (event.key.code == sf::Keyboard::P)
+			{
+				Algorithm::DFS(this);
+			}
 		}
 	}
 
@@ -127,5 +137,38 @@ void Grid::SetNodeStateMouse(sf::Vector2i mousePos) {
 	else {
 		if(!movingFinish && !movingStart)
 			lastNodeStateChange = nullptr;
+	}
+}
+
+
+void Grid::SetNeighbourNodes(Node* node) {
+	std::vector<Node*> returnVector;
+
+	sf::Vector2i nodePos = node->positionInMatrice;
+
+	if (nodePos.x > 0) {
+		if (grid[nodePos.x - 1][nodePos.y]->GetState() != Node::wall || grid[nodePos.x - 1][nodePos.y]->GetState() != Node::visited)
+			returnVector.push_back(grid[nodePos.x - 1][nodePos.y]);
+	}
+
+	if (nodePos.x < rowsNum) {
+		if (grid[nodePos.x + 1][nodePos.y]->GetState() != Node::wall || grid[nodePos.x + 1][nodePos.y]->GetState() != Node::visited)
+			returnVector.push_back(grid[nodePos.x + 1][nodePos.y]);
+	}
+
+	if (nodePos.y > 0) {
+		if (grid[nodePos.x][nodePos.y - 1]->GetState() != Node::wall || grid[nodePos.x][nodePos.y - 1]->GetState() != Node::visited)
+			returnVector.push_back(grid[nodePos.x][nodePos.y - 1]);
+	}
+
+	if (nodePos.y < ColNums) {
+		if (grid[nodePos.x][nodePos.y + 1]->GetState() != Node::wall || grid[nodePos.x][nodePos.y + 1]->GetState() != Node::visited)
+			returnVector.push_back(grid[nodePos.x][nodePos.y + 1]);
+	}
+
+
+
+	for (Node * n : returnVector) {
+		node->AddChild(n);
 	}
 }
