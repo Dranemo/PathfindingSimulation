@@ -61,6 +61,7 @@ public:
 	void SetState(State state) {
 		this->state = state;
 	}
+	State GetState() { return state; }
 
 	float weight;
 	sf::RectangleShape* square;

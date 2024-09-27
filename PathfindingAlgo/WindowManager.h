@@ -23,6 +23,7 @@ public:
 	}
 
 	void CreateWindow();
+
 	void Update();
 
 	void AddDrawable(sf::Drawable* drawable);

@@ -1,4 +1,5 @@
 #include "WindowManager.h"
+#include <iostream>
 
 WindowManager* WindowManager::instance = nullptr;
 sf::Vector2f WindowManager::windowSize = sf::Vector2f(900, 900);
