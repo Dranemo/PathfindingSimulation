@@ -151,22 +151,22 @@ void Grid::SetNeighbourNodes(Node* node) {
 	sf::Vector2i nodePos = node->positionInMatrice;
 
 	if (nodePos.x > 0) {
-		if (grid[nodePos.x - 1][nodePos.y]->GetState() != Node::wall)
+		if (grid[nodePos.x - 1][nodePos.y]->GetState() != Node::wall && grid[nodePos.x - 1][nodePos.y]->GetState() != Node::start)
 			returnVector.push_back(grid[nodePos.x - 1][nodePos.y]);
 	}
 
 	if (nodePos.x < rowsNum -1) {
-		if (grid[nodePos.x + 1][nodePos.y]->GetState() != Node::wall)
+		if (grid[nodePos.x + 1][nodePos.y]->GetState() != Node::wall && grid[nodePos.x + 1][nodePos.y]->GetState() != Node::start)
 			returnVector.push_back(grid[nodePos.x + 1][nodePos.y]);
 	}
 
 	if (nodePos.y > 0) {
-		if (grid[nodePos.x][nodePos.y - 1]->GetState() != Node::wall)
+		if (grid[nodePos.x][nodePos.y - 1]->GetState() != Node::wall && grid[nodePos.x][nodePos.y - 1]->GetState() != Node::start)
 			returnVector.push_back(grid[nodePos.x][nodePos.y - 1]);
 	}
 
 	if (nodePos.y < ColNums -1) {
-		if (grid[nodePos.x][nodePos.y + 1]->GetState() != Node::wall)
+		if (grid[nodePos.x][nodePos.y + 1]->GetState() != Node::wall && grid[nodePos.x][nodePos.y + 1]->GetState() != Node::start)
 			returnVector.push_back(grid[nodePos.x][nodePos.y + 1]);
 	}
 

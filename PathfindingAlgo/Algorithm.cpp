@@ -40,10 +40,10 @@ void Algorithm::DFS(Grid* grid) {
 				grid->SetNeighbourNodes(newNode);
 
 				visitingNode = newNode;
-				if(visitingNode != grid->GetFinishNode())
+				if(visitingNode != grid->GetFinishNode() && visitingNode != grid->GetStartNode())
 					visitingNode->SetState(Node::visited);
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			}
 			else {
 				visitingNode = visitingNode->GetParent();
@@ -64,9 +64,10 @@ void Algorithm::DFS(Grid* grid) {
 	// Affichage du path
 	for (int i = path.size() - 1; i >= 0; i--) {
 		path[i]->SetState(Node::path);
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 
+	std::cout << "DFS Finished \n";
 	threadOn = false;
 }
 
@@ -77,9 +78,9 @@ void Algorithm::BFS(Grid* grid) {
 	GetWalls(grid);
 
 	visitingNode = grid->GetStartNode();
+	grid->SetNeighbourNodes(visitingNode);
 
 	while (visitingNode != grid->GetFinishNode()) {
-		grid->SetNeighbourNodes(visitingNode);
 
 
 	}
