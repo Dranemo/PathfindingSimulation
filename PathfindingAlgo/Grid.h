@@ -38,5 +38,9 @@ public:
 			wm->AddLine(sf::Vector2f(0, i * Node::sizeNode.y), sf::Vector2f(rowsNum * Node::sizeNode.y, i * Node::sizeNode.y));  // Lignes horizontales
 		}
 	}
+
+	int GetRows() const { return rowsNum; };
+
+	int GetCols() const { return ColNums; };
 };
 

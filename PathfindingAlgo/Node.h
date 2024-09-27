@@ -10,11 +10,13 @@ public:
 		visited,
 		wall,
 		defaultState,
+		path
 	};
 
 private:
 
 	State state = State::defaultState;
+
 
 
 public:
@@ -52,7 +54,12 @@ public:
 		case State::visited:
 			square->setFillColor(sf::Color::Green);
 			break;
+
+		case State::path:
+			square->setFillColor(sf::Color::Magenta);
+			break;
 		}
+		
 	}
 
 
@@ -62,9 +69,14 @@ public:
 		this->state = state;
 	}
 
+	State GetState() const { return state; };
+
+	std::vector<Node*> GetNeighbors(const std::vector<std::vector<Node*>>& grid);
+
 	float weight;
 	sf::RectangleShape* square;
 	sf::Vector2i positionInMatrice;
 
+	Node* parent;
 };
 
