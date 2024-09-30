@@ -1,23 +1,20 @@
 #include "Dijkstra.h"
 
-int dx[] = { -1, 1, 0, 0 };
-int dy[] = { 0, 0, -1, 1 };
-
 struct Compare {
     bool operator()(Node* a, Node* b) {
         return a->weight > b->weight;
     }
 };
 
-void Dijkstra(Grid grid) 
+void Dijkstra(Grid grid, Node* start) 
 {
     // Initialiser la matrice des distances avec "infini"
-    int shortest_path = 0;
+    bool isFinish = false;
     std::priority_queue<Node*, std::vector<Node*>, Compare> pq;
 
     // Point de départ
-    int startX = 1;
-    int startY = 1;
+    int startX = start->positionInMatrice.x;
+    int startY = start->positionInMatrice.y;
     Node* current = grid.grid[startX][startY];
     current->weight = 0;
     pq.push(current);
@@ -25,26 +22,20 @@ void Dijkstra(Grid grid)
     WindowManager* windowManager = WindowManager::GetInstance();
 
 
-    while (!pq.empty()) {
+    while (!pq.empty() & !isFinish) {
         Node* current = pq.top();
         pq.pop();
-
-        //// Arrêter si nous atteignons le nœud de fin
-        //if (current->GetState() == Node::finish) {
-        //    std::cout << "Fin atteint avec un coût de " << current->weight << std::endl;
-        //    reconstructPath(current); 
-        //    break;
-        //}
 
         // Obtenir les voisins
         std::vector<Node*> neighbors = current->GetNeighbors(grid.grid);
         for (Node* neighbor : neighbors) {
             if (neighbor->GetState() != Node::visited && neighbor->GetState() != Node::start) {
-                int newCost = current->weight + neighbor->weight; // Ou une autre logique de coût
+                int newCost = current->weight + neighbor->weight; 
                 neighbor->weight = newCost;
                 neighbor->parent = current; // Suivre le chemin
                 if (neighbor->GetState() == Node::finish) {
                     reconstructPath(current);
+                    isFinish = true;
                     break;
                 }
                 else {
@@ -54,6 +45,7 @@ void Dijkstra(Grid grid)
             }
         }
 
+        // Update
         if (windowManager->window.isOpen())
         {
             windowManager->Update();
