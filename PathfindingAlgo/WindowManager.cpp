@@ -1,4 +1,6 @@
 #include "WindowManager.h"
+#include "InputManager.h"
+#include <iostream>
 
 WindowManager* WindowManager::instance = nullptr;
 sf::Vector2f WindowManager::windowSize = sf::Vector2f(900, 900);
@@ -8,12 +10,9 @@ void WindowManager::CreateWindow() {
 }
 
 void WindowManager::Update() {
-    sf::Event event;
-    while (window.pollEvent(event))
-    {
-        if (event.type == sf::Event::Closed)
-            window.close();
-    }
+    if(InputManager::GetWindowClosed()) {
+		window.close();
+	}
 
     window.clear();
 

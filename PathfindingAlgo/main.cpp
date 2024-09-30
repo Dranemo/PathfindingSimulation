@@ -1,7 +1,6 @@
 
 #include "Grid.h"
-#include "Dijkstra.h"
-
+#include "InputManager.h"
 
 
 int main()
@@ -10,17 +9,13 @@ int main()
     windowManager->CreateWindow();
 
     Grid grid;
+    InputManager::Awake();
 
-
-    if (windowManager->window.isOpen())
+    while (windowManager->window.isOpen())
     {
+        InputManager::Update();
+        grid.Update();
         windowManager->Update();
-
-        for (int i = 0; i < WindowManager::windowSize.y / Node::sizeNode.y; i++) {
-            for (int j = 0; j < WindowManager::windowSize.x / Node::sizeNode.x; j++) {
-                grid.grid[i][j]->Update();
-            }
-        }
     }
     
     return 0;
