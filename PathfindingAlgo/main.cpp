@@ -1,24 +1,24 @@
 
-#include "WindowManager.h" 
-
+#include "Grid.h"
+#include "InputManager.h"
 
 
 
 
 int main()
 {
-    WindowManager windowManager;
-    windowManager.CreateWindow();
+    WindowManager* windowManager = WindowManager::GetInstance();
+    windowManager->CreateWindow();
 
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    Grid grid;
+    InputManager::Awake();
 
-    windowManager.AddDrawable(&shape);
-
-    while (windowManager.window.isOpen())
+    while (windowManager->window.isOpen())
     {
-        windowManager.Update();
+        InputManager::Update();
+        grid.Update();
+        windowManager->Update();
     }
 
     return 0;
-}
+} 
