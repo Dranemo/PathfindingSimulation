@@ -130,6 +130,24 @@ void Grid::Update() {
 			std::thread t(&Algorithm::BFS, this);
 			t.detach();  // Détacher le thread si vous ne voulez pas attendre qu'il se termine
 		}
+
+		else if (InputManager::GetEvent(sf::Keyboard::D)) {
+
+			mousePressed = false;
+
+			movingStart = false;
+			movingFinish = false;
+			creatingWalls = false;
+
+			lastNodeStateChange = nullptr;
+
+			ClearGridVisited();
+
+
+			// Lancer DFS dans un nouveau thread, en passant `this` (instance de Grid) comme argument
+			std::thread t(&Algorithm::Dijkstra, this);
+			t.detach();  // Détacher le thread si vous ne voulez pas attendre qu'il se termine
+		}
 	}
 
 

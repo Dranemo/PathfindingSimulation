@@ -35,18 +35,15 @@ public:
 	void SetState(State state) {
 		this->state = state;
 	}
-	State GetState() { return state; }
+	State GetState() const { return state; };
 
 	void SetParent(Node* parent) { this->parent = parent; }
 	void AddChild(Node* child) { childs.push_back(child); }
 	Node* GetParent() { return parent; }
 	std::vector<Node*> GetChilds() { return childs; }
 
-
-
 	float weight;
 	sf::RectangleShape* square;
 	sf::Vector2i positionInMatrice;
-
 };
 

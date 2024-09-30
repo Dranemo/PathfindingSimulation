@@ -1,9 +1,4 @@
 #include "Algorithm.h"
-#include <thread>
-#include <chrono>
-#include <algorithm>
-#include <iostream>
-
 #include "Grid.h"
 #include "Node.h"
 
@@ -12,6 +7,12 @@ bool Algorithm::threadOn = false;
 std::vector<Node*> Algorithm::serchingQueue;
 std::vector<Node*> Algorithm::path;
 std::vector<Node*> Algorithm::walls;
+
+struct DijkstraCompare {
+	bool operator()(Node* a, Node* b) {
+		return a->weight > b->weight;
+	}
+};
 
 
 void Algorithm::DFS(Grid* grid) {
@@ -64,8 +65,6 @@ void Algorithm::DFS(Grid* grid) {
 
 	std::cout << "DFS Finished \n";
 }
-
-
 
 
 void Algorithm::BFS(Grid* grid) {
@@ -124,6 +123,56 @@ void Algorithm::BFS(Grid* grid) {
 
 	std::cout << "BFS Finished \n";
 
+}
+
+
+void Algorithm::Dijkstra(Grid* grid) 
+{
+	threadOn = true;
+	bool isFinish = false;
+	std::priority_queue<Node*, std::vector<Node*>, DijkstraCompare> pq;
+
+
+	// Point de départ
+	visitingNode = grid->GetStartNode();
+	visitingNode->weight = 0;
+	visitingNode->visited = true;
+	pq.push(visitingNode);
+
+	WindowManager* windowManager = WindowManager::GetInstance();
+
+
+	while (!pq.empty() && !isFinish) {
+		visitingNode = pq.top();
+		pq.pop();
+
+		// Obtenir les voisins
+		grid->SetNeighbourNodes(visitingNode);
+
+		for (Node* neighbor : visitingNode->GetChilds()) {
+			if (!neighbor->visited) {
+				int newCost = visitingNode->weight + neighbor->weight;
+				neighbor->weight = newCost;
+				neighbor->SetParent(visitingNode);
+				if (neighbor->GetState() == Node::finish) {
+					isFinish = true;
+					break;
+				}
+				else {
+					neighbor->visited = true;
+				}
+				pq.push(neighbor);
+			}
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
+	CalculatePath(grid);
+	ShowPath();
+	Reset();
+
+	std::cout << "Dijkstra Finished \n";
 }
 
 void Algorithm::GetWalls(Grid* grid) {

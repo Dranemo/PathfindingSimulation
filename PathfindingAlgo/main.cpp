@@ -3,8 +3,6 @@
 #include "InputManager.h"
 
 
-
-
 int main()
 {
     WindowManager* windowManager = WindowManager::GetInstance();
@@ -19,6 +17,6 @@ int main()
         grid.Update();
         windowManager->Update();
     }
-
+    
     return 0;
 } 

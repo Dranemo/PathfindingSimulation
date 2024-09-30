@@ -1,5 +1,10 @@
 #pragma once
 #include <vector>
+#include <thread>
+#include <chrono>
+#include <algorithm>
+#include <iostream>
+#include <queue>
 
 class Grid;
 class Node;
@@ -26,5 +31,7 @@ public:
 	static void DFS(Grid* grid);
 
 	static void BFS(Grid* grid);
+
+	static void Dijkstra(Grid* grid);
 };
 
