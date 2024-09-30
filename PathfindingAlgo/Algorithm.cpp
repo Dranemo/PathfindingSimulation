@@ -1,6 +1,7 @@
 #include "Algorithm.h"
 #include <thread>
 #include <chrono>
+#include <algorithm>
 #include <iostream>
 
 #include "Grid.h"
@@ -22,12 +23,16 @@ void Algorithm::DFS(Grid* grid) {
 
 	// Calcul du path (affichage vert)
 	while (visitingNode != grid->GetFinishNode()) {
+		visitingNode->visited = true;
+
 
 		if (!visitingNode->GetChilds().empty()) {
 			bool allVisited = true;
 
+			// Vérifier qu'il n'est pas déjà présent dans la queue et que c'est un noeud non visité
 			for (Node* n : visitingNode->GetChilds()) {
-				if (n->GetState() != Node::visited) {
+				if (!n->visited) {
+
 					serchingQueue.push_back(n);
 					allVisited = false;
 				}
@@ -40,8 +45,6 @@ void Algorithm::DFS(Grid* grid) {
 				grid->SetNeighbourNodes(newNode);
 
 				visitingNode = newNode;
-				if(visitingNode != grid->GetFinishNode() && visitingNode != grid->GetStartNode())
-					visitingNode->SetState(Node::visited);
 
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			}
@@ -55,35 +58,72 @@ void Algorithm::DFS(Grid* grid) {
 
 	}
 
-	// Retour au début et vector path
-	while (visitingNode != grid->GetStartNode()) {
-		path.push_back(visitingNode);
-		visitingNode = visitingNode->GetParent();
-	}
-
-	// Affichage du path
-	for (int i = path.size() - 1; i >= 0; i--) {
-		path[i]->SetState(Node::path);
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	}
+	CalculatePath(grid);
+	ShowPath();
+	Reset();
 
 	std::cout << "DFS Finished \n";
-	threadOn = false;
 }
 
 
 
 
 void Algorithm::BFS(Grid* grid) {
+	threadOn = true;
 	GetWalls(grid);
 
 	visitingNode = grid->GetStartNode();
 	grid->SetNeighbourNodes(visitingNode);
+	visitingNode->visited = true;
+
+	int i = 0;
 
 	while (visitingNode != grid->GetFinishNode()) {
 
+		if (!visitingNode->GetChilds().empty()) {
 
+			// Vérifier qu'il n'est pas déjà présent dans la queue et que c'est un noeud non visité
+			for (Node* n : visitingNode->GetChilds()) {
+
+				if (!n->visited) {
+
+					auto it = std::find(serchingQueue.begin(), serchingQueue.end(), n);
+
+					if (it == serchingQueue.end()) {
+						serchingQueue.push_back(n);
+						n->SetParent(visitingNode);
+					}					
+				}
+			}
+
+			
+
+
+
+
+
+			Node* newNode = serchingQueue[i];
+
+			//newNode->SetParent(visitingNode);
+			grid->SetNeighbourNodes(newNode);
+
+			visitingNode = newNode;
+			if (visitingNode != grid->GetFinishNode() && visitingNode != grid->GetStartNode())
+				visitingNode->visited = true;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+		}
+
+		i++;
 	}
+
+	CalculatePath(grid);
+	ShowPath();
+	Reset();
+
+	std::cout << "BFS Finished \n";
+
 }
 
 void Algorithm::GetWalls(Grid* grid) {
@@ -97,4 +137,30 @@ void Algorithm::GetWalls(Grid* grid) {
 		}
 	}
 
+}
+
+void Algorithm::CalculatePath(Grid* grid) {
+	// Retour au début et vector path
+	while (visitingNode != grid->GetStartNode()) {
+		path.push_back(visitingNode);
+		visitingNode = visitingNode->GetParent();
+	}
+}
+
+void Algorithm::ShowPath() {
+	// Affichage du path
+	for (int i = path.size() - 1; i >= 0; i--) {
+		if (path[i]->GetState() != Node::start && path[i]->GetState() != Node::finish)
+			path[i]->SetState(Node::path);
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+}
+
+void Algorithm::Reset() {
+	serchingQueue.clear();
+	path.clear();
+	walls.clear();
+
+	threadOn = false;
 }

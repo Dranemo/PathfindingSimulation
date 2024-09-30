@@ -29,6 +29,9 @@ public:
 	void SetStartNode(int x, int y);
 	void SetFinishNode(int x, int y);
 
+	void ClearGrid();
+	void ClearGridVisited();
+
 	void SetNeighbourNodes(Node* node);
 
 	void SetNodeStateMouse(sf::Vector2i mousePos);

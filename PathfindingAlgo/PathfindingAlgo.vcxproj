@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Algorithm.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="WindowManager.cpp" />
@@ -152,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>

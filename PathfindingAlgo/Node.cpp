@@ -13,12 +13,16 @@ Node::Node(int i, int ii) {
 }
 
 void Node::Update() {
+	if(state == State::defaultState)
+		square->setFillColor(sf::Color::White);
+
+
+	if (visited)
+		square->setFillColor(sf::Color::Green);
+
+
 	switch (state)
 	{
-	case State::defaultState:
-		square->setFillColor(sf::Color::White);
-		break;
-
 	case State::finish:
 		square->setFillColor(sf::Color::Red);
 		break;
@@ -34,9 +38,6 @@ void Node::Update() {
 	case State::path:
 		square->setFillColor(sf::Color::Magenta);
 		break;
-
-	case State::visited:
-		square->setFillColor(sf::Color::Green);
-		break;
 	}
+
 }

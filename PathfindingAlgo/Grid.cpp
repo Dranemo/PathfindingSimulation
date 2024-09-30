@@ -1,5 +1,6 @@
 #include "Grid.h"
 #include "Algorithm.h"
+#include "InputManager.h"
 
 #include <thread>
 
@@ -47,16 +48,54 @@ void Grid::SetFinishNode(int x, int y) {
 	finishNode->SetState(Node::finish);
 }
 
-void Grid::Update() {
-	sf::Event event;
-	while (wm->window.pollEvent(event) && Algorithm::threadOn == false)
-	{
-		if (event.type == sf::Event::MouseButtonPressed) {
-			mousePressed = true;
 
 
+void Grid::ClearGrid() {
+	for (std::vector<Node*> v : grid) {
+		for (Node* n : v) {
+			n->SetState(Node::defaultState);
+
+			n->GetChilds().clear();
+			n->SetParent(nullptr);
 		}
-		else if (event.type == sf::Event::MouseButtonReleased) {
+	}
+
+	startNode->SetState(Node::start);
+	finishNode->SetState(Node::finish);
+
+
+}
+
+void Grid::ClearGridVisited() {
+	for (std::vector<Node*> v : grid) {
+		for (Node* n : v) {
+			n->visited = false;
+			if(n->GetState() == Node::path)
+				n->SetState(Node::defaultState);
+
+			n->GetChilds().clear();
+			n->SetParent(nullptr);
+		}
+	}
+}
+
+
+void Grid::Update() {
+	if(InputManager::GetMousePressed())
+		mousePressed = true;
+	else{
+		mousePressed = false;
+
+		movingStart = false;
+		movingFinish = false;
+		creatingWalls = false;
+
+		lastNodeStateChange = nullptr;
+	}
+
+	if (Algorithm::threadOn == false) {
+		if (InputManager::GetEvent(sf::Keyboard::P)) {
+
 			mousePressed = false;
 
 			movingStart = false;
@@ -64,17 +103,32 @@ void Grid::Update() {
 			creatingWalls = false;
 
 			lastNodeStateChange = nullptr;
+
+
+			ClearGridVisited();
+
+
+			// Lancer DFS dans un nouveau thread, en passant `this` (instance de Grid) comme argument
+			std::thread t(&Algorithm::DFS, this);
+			t.detach();  // Détacher le thread si vous ne voulez pas attendre qu'il se termine
 		}
 
-		if (event.type == sf::Event::KeyPressed)
-		{
-			// Vérifier si la touche 'P' est pressée
-			if (event.key.code == sf::Keyboard::P)
-			{
-				// Lancer DFS dans un nouveau thread, en passant `this` (instance de Grid) comme argument
-				std::thread t(&Algorithm::DFS, this);
-				t.detach();  // Détacher le thread si vous ne voulez pas attendre qu'il se termine
-			}
+		else if (InputManager::GetEvent(sf::Keyboard::B)) {
+
+			mousePressed = false;
+
+			movingStart = false;
+			movingFinish = false;
+			creatingWalls = false;
+
+			lastNodeStateChange = nullptr;
+
+			ClearGridVisited();
+
+
+			// Lancer DFS dans un nouveau thread, en passant `this` (instance de Grid) comme argument
+			std::thread t(&Algorithm::BFS, this);
+			t.detach();  // Détacher le thread si vous ne voulez pas attendre qu'il se termine
 		}
 	}
 
@@ -128,7 +182,7 @@ void Grid::SetNodeStateMouse(sf::Vector2i mousePos) {
 			}
 
 
-			else if (nodeConcerned->GetState() == Node::defaultState)
+			else if (nodeConcerned->GetState() != Node::wall && nodeConcerned->GetState() != Node::start && nodeConcerned->GetState() != Node::finish)
 				nodeConcerned->SetState(Node::wall);
 			else if (nodeConcerned->GetState() == Node::wall)
 				nodeConcerned->SetState(Node::defaultState);

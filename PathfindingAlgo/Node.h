@@ -7,11 +7,11 @@ public:
 	enum State {
 		finish,
 		start,
-		visited,
 		path,
 		wall,
 		defaultState,
 	};
+	bool visited = false;
 
 private:
 

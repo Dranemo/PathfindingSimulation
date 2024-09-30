@@ -16,6 +16,10 @@ private:
 	static std::vector<Node*> walls;
 	static void GetWalls(Grid* grid);
 
+	static void CalculatePath(Grid* grid);
+	static void ShowPath();
+	static void Reset();
+
 public:
 	static bool threadOn;
 
