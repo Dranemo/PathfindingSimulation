@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include <functional>
 
+
 class Button
 {
 
@@ -13,6 +14,7 @@ public:
 	void SetText(std::string _text);
 	void SetTextColor(sf::Color _color);
 	void SetCharacterSize(int _characterSize);
+	void SetCallback(std::function<void()> _callback);
 
 
 	bool Update(sf::Vector2i _mousePos);

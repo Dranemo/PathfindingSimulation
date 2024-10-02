@@ -55,7 +55,7 @@ void Grid::ClearGrid() {
 		for (Node* n : v) {
 			n->SetState(Node::defaultState);
 
-			n->GetChilds().clear();
+			n->GetChilds()->clear();
 			n->SetParent(nullptr);
 		}
 	}
@@ -73,7 +73,7 @@ void Grid::ClearGridVisited() {
 			if(n->GetState() == Node::path)
 				n->SetState(Node::defaultState);
 
-			n->GetChilds().clear();
+			n->GetChilds()->clear();
 			n->SetParent(nullptr);
 		}
 	}
@@ -221,6 +221,10 @@ void Grid::SetNeighbourNodes(Node* node) {
 	std::vector<Node*> returnVector = {};
 
 	sf::Vector2i nodePos = node->positionInMatrice;
+
+	if (nodePos.x == 0 && nodePos.y == 5) {
+		std::cout << "stop" << std::endl;
+	}
 
 	if (nodePos.x > 0) {
 		if (grid[nodePos.x - 1][nodePos.y]->GetState() != Node::wall && grid[nodePos.x - 1][nodePos.y]->GetState() != Node::start)

@@ -6,7 +6,7 @@ Node* Algorithm::visitingNode = nullptr;
 bool Algorithm::threadOn = false;
 std::vector<Node*> Algorithm::serchingQueue;
 std::vector<Node*> Algorithm::path;
-std::vector<Node*> Algorithm::walls;
+int Algorithm::speed = 50;
 
 struct DijkstraCompare {
 	bool operator()(Node* a, Node* b) {
@@ -17,8 +17,8 @@ struct DijkstraCompare {
 
 void Algorithm::DFS(Grid* grid) {
 	threadOn = true;
-	GetWalls(grid);
-	
+	grid->ClearGridVisited();
+
 	visitingNode = grid->GetStartNode();
 	grid->SetNeighbourNodes(visitingNode);
 
@@ -27,11 +27,11 @@ void Algorithm::DFS(Grid* grid) {
 		visitingNode->visited = true;
 
 
-		if (!visitingNode->GetChilds().empty()) {
+		if (!visitingNode->GetChilds()->empty()) {
 			bool allVisited = true;
 
 			// Vérifier qu'il n'est pas déjà présent dans la queue et que c'est un noeud non visité
-			for (Node* n : visitingNode->GetChilds()) {
+			for (Node* n : *visitingNode->GetChilds()) {
 				if (!n->visited) {
 
 					serchingQueue.push_back(n);
@@ -47,7 +47,7 @@ void Algorithm::DFS(Grid* grid) {
 
 				visitingNode = newNode;
 
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				std::this_thread::sleep_for(std::chrono::milliseconds(speed));
 			}
 			else {
 				visitingNode = visitingNode->GetParent();
@@ -69,7 +69,7 @@ void Algorithm::DFS(Grid* grid) {
 
 void Algorithm::BFS(Grid* grid) {
 	threadOn = true;
-	GetWalls(grid);
+	grid->ClearGridVisited();
 
 	visitingNode = grid->GetStartNode();
 	grid->SetNeighbourNodes(visitingNode);
@@ -79,10 +79,14 @@ void Algorithm::BFS(Grid* grid) {
 
 	while (visitingNode != grid->GetFinishNode()) {
 
-		if (!visitingNode->GetChilds().empty()) {
+		if (!visitingNode->GetChilds()->empty()) {
 
 			// Vérifier qu'il n'est pas déjà présent dans la queue et que c'est un noeud non visité
-			for (Node* n : visitingNode->GetChilds()) {
+			for (Node* n : *visitingNode->GetChilds()) {
+
+				if (n->GetState() == Node::wall) {
+					std::cout << "euh" << std::endl;
+				}
 
 				if (!n->visited) {
 
@@ -110,7 +114,7 @@ void Algorithm::BFS(Grid* grid) {
 			if (visitingNode != grid->GetFinishNode() && visitingNode != grid->GetStartNode())
 				visitingNode->visited = true;
 
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			std::this_thread::sleep_for(std::chrono::milliseconds(speed));
 
 		}
 
@@ -129,6 +133,7 @@ void Algorithm::BFS(Grid* grid) {
 void Algorithm::Dijkstra(Grid* grid) 
 {
 	threadOn = true;
+	grid->ClearGridVisited();
 	bool isFinish = false;
 	std::priority_queue<Node*, std::vector<Node*>, DijkstraCompare> pq;
 
@@ -149,7 +154,7 @@ void Algorithm::Dijkstra(Grid* grid)
 		// Obtenir les voisins
 		grid->SetNeighbourNodes(visitingNode);
 
-		for (Node* neighbor : visitingNode->GetChilds()) {
+		for (Node* neighbor : *visitingNode->GetChilds()) {
 			if (!neighbor->visited) {
 				int newCost = visitingNode->weight + neighbor->weight;
 				neighbor->weight = newCost;
@@ -165,7 +170,7 @@ void Algorithm::Dijkstra(Grid* grid)
 			}
 		}
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(speed));
 	}
 
 	CalculatePath(grid);
@@ -173,19 +178,6 @@ void Algorithm::Dijkstra(Grid* grid)
 	Reset();
 
 	std::cout << "Dijkstra Finished \n";
-}
-
-void Algorithm::GetWalls(Grid* grid) {
-
-
-	for (int i = 0; i < WindowManager::windowSize.y / Node::sizeNode.y; i++) {
-		for (int j = 0; j < WindowManager::windowSize.x / Node::sizeNode.x; j++) {
-			if (grid->grid[i][j]->GetState() == Node::wall) {
-				walls.push_back(grid->grid[i][j]);
-			}
-		}
-	}
-
 }
 
 void Algorithm::CalculatePath(Grid* grid) {
@@ -202,14 +194,13 @@ void Algorithm::ShowPath() {
 		if (path[i]->GetState() != Node::start && path[i]->GetState() != Node::finish)
 			path[i]->SetState(Node::path);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(speed));
 	}
 }
 
 void Algorithm::Reset() {
 	serchingQueue.clear();
 	path.clear();
-	walls.clear();
 
 	threadOn = false;
 }

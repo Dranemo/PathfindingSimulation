@@ -30,7 +30,6 @@ bool Button::Update(sf::Vector2i _mousePos)
 {
 	if (_mousePos.x >= bounds.left && _mousePos.x <= bounds.left + bounds.width && _mousePos.y >= bounds.top && _mousePos.y <= bounds.top + bounds.height)
 	{
-		std::cout << "Clique" << std::endl;
 		Execute();
 		return true;
 	}
@@ -61,4 +60,9 @@ void Button::SetTextColor(sf::Color _color)
 void Button::SetCharacterSize(int _characterSize)
 {
 	text->setCharacterSize(_characterSize);
+}
+
+void Button::SetCallback(std::function<void()> _callback) 
+{
+	callback = _callback;
 }
