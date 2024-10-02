@@ -6,8 +6,6 @@
 class Grid
 {
 private:
-	int rowsNum = WindowManager::windowSize.x / Node::sizeNode.x;
-	int ColNums = WindowManager::windowSize.y / Node::sizeNode.y;
 
 	Node* startNode = nullptr;
 	Node* finishNode = nullptr;
@@ -21,6 +19,8 @@ private:
 	bool creatingWalls = false;
 
 public:
+	int rowsNum = WindowManager::windowSize.x / Node::sizeNode.x;
+	int ColNums = WindowManager::windowSize.y / Node::sizeNode.y;
 	std::vector<std::vector<Node*>> grid;
 
 	Node* GetStartNode() { return startNode; }

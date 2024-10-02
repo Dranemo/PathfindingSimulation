@@ -148,7 +148,39 @@ void Grid::Update() {
 			std::thread t(&Algorithm::Dijkstra, this);
 			t.detach();  // Détacher le thread si vous ne voulez pas attendre qu'il se termine
 		}
+
+		else if (InputManager::GetEvent(sf::Keyboard::A)) {
+
+			mousePressed = false;
+
+			movingStart = false;
+			movingFinish = false;
+			creatingWalls = false;
+
+			lastNodeStateChange = nullptr;
+
+			ClearGridVisited();
+
+			std::thread t(&Algorithm::AStar, this);
+			t.detach(); 
+		}
+
+	else if (InputManager::GetEvent(sf::Keyboard::G)) {
+
+		mousePressed = false;
+
+		movingStart = false;
+		movingFinish = false;
+		creatingWalls = false;
+
+		lastNodeStateChange = nullptr;
+
+		ClearGridVisited();
+
+		std::thread t(&Algorithm::GreedyBFS, this);
+		t.detach();
 	}
+}
 
 
 	if (mousePressed) {

@@ -13,7 +13,16 @@ struct DijkstraCompare {
 		return a->weight > b->weight;
 	}
 };
-
+struct AStarCompare {
+	bool operator()(Node* a, Node* b) {
+		return a->fCost > b->fCost;
+	}
+};
+struct GreedyCompare {
+	bool operator()(Node* a, Node* b) {
+		return a->hCost > b->hCost;
+	}
+};
 
 void Algorithm::DFS(Grid* grid) {
 	threadOn = true;
@@ -212,4 +221,118 @@ void Algorithm::Reset() {
 	walls.clear();
 
 	threadOn = false;
+}
+
+void Algorithm::AStar(Grid* grid) {
+	
+	threadOn = true;
+	bool isFinish = false;
+	std::priority_queue<Node*, std::vector<Node*>, AStarCompare> pq;
+
+	visitingNode = grid->GetStartNode();
+	visitingNode->fCost = 0;
+	visitingNode->visited = true;
+	pq.push(visitingNode);
+
+	WindowManager* windowManager = WindowManager::GetInstance();
+
+
+	while (!pq.empty() && !isFinish) {
+		visitingNode = pq.top();
+		pq.pop();
+
+		// Obtenir les voisins
+		grid->SetNeighbourNodes(visitingNode);
+
+		for (Node* neighbor : visitingNode->GetChilds()) {
+			if (!neighbor->visited) {
+				neighbor->gCost = neighbor->manhattan_distance(
+					neighbor->positionInMatrice.x,
+					neighbor->positionInMatrice.y,
+					grid->GetStartNode()->positionInMatrice.x,
+					grid->GetStartNode()->positionInMatrice.y
+				);
+				float newGCost = visitingNode->gCost + neighbor->manhattan_distance(
+					neighbor->positionInMatrice.x,
+					neighbor->positionInMatrice.y,
+					visitingNode->positionInMatrice.x,
+					visitingNode->positionInMatrice.y
+				);
+				neighbor->hCost = neighbor->manhattan_distance(
+					neighbor->positionInMatrice.x,
+					neighbor->positionInMatrice.y,
+					grid->GetFinishNode()->positionInMatrice.x,
+					grid->GetFinishNode()->positionInMatrice.y
+				);
+				neighbor->gCost = newGCost;
+				neighbor->fCost = neighbor->gCost + neighbor->hCost;
+				neighbor->SetParent(visitingNode);
+				if (neighbor->GetState() == Node::finish) {
+					isFinish = true;
+					break;
+				}
+				else {
+					neighbor->visited = true;
+				}
+				pq.push(neighbor);
+			}
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
+	CalculatePath(grid);
+	ShowPath();
+	Reset();
+
+	std::cout << "A Star Finished \n";
+}
+void Algorithm::GreedyBFS(Grid* grid) {
+
+	threadOn = true;
+	bool isFinish = false;
+	std::priority_queue<Node*, std::vector<Node*>, GreedyCompare> pq;
+
+	visitingNode = grid->GetStartNode();
+	visitingNode->visited = true;
+	pq.push(visitingNode);
+
+	WindowManager* windowManager = WindowManager::GetInstance();
+
+
+	while (!pq.empty() && !isFinish) {
+		visitingNode = pq.top();
+		pq.pop();
+
+		// Obtenir les voisins
+		grid->SetNeighbourNodes(visitingNode);
+
+		for (Node* neighbor : visitingNode->GetChilds()) {
+			if (!neighbor->visited) {
+				neighbor->hCost = neighbor->manhattan_distance(
+					neighbor->positionInMatrice.x,
+					neighbor->positionInMatrice.y,
+					grid->GetFinishNode()->positionInMatrice.x,
+					grid->GetFinishNode()->positionInMatrice.y
+				);
+				neighbor->SetParent(visitingNode);
+				if (neighbor->GetState() == Node::finish) {
+					isFinish = true;
+					break;
+				}
+				else {
+					neighbor->visited = true;
+				}
+				pq.push(neighbor);
+			}
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	}
+
+	CalculatePath(grid);
+	ShowPath();
+	Reset();
+
+	std::cout << "Greedy BFS Finished \n";
 }
