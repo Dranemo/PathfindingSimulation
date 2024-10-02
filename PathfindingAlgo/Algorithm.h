@@ -10,6 +10,7 @@ class Algorithm
 {
 private:
 	static Node* visitingNode;
+	
 
 	static std::vector<Node*> path;
 

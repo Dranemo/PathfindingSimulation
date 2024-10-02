@@ -27,6 +27,7 @@ struct DijkstraCompare {
 
 void Algorithm::DFS(Grid* grid) {
 	threadOn = true;
+	grid->ClearGridVisited();
 
 	Stack<Node*> stack;
 	std::set<Node*> enTraitement;
@@ -99,6 +100,7 @@ void Algorithm::DFS(Grid* grid) {
 
 void Algorithm::BFS(Grid* grid) {
 	threadOn = true;
+	grid->ClearGridVisited();
 
 
 	std::queue<Node*> queue;
@@ -153,6 +155,10 @@ void Algorithm::BFS(Grid* grid) {
 	}
 
 	CalculatePath(grid);
+
+	enTraitement.clear();
+	while (!queue.empty())
+		queue.pop();
 	ShowPath();
 	Reset();
 
