@@ -252,6 +252,7 @@ void Algorithm::Reset() {
 void Algorithm::AStar(Grid* grid) {
 	
 	threadOn = true;
+	grid->ClearGridVisited();
 	bool isFinish = false;
 	std::priority_queue<Node*, std::vector<Node*>, AStarCompare> pq;
 
@@ -270,7 +271,7 @@ void Algorithm::AStar(Grid* grid) {
 		// Obtenir les voisins
 		grid->SetNeighbourNodes(visitingNode);
 
-		for (Node* neighbor : visitingNode->GetChilds()) {
+		for (Node* neighbor : *visitingNode->GetChilds()) {
 			if (!neighbor->visited) {
 				neighbor->gCost = neighbor->manhattan_distance(
 					neighbor->positionInMatrice.x,
@@ -316,6 +317,7 @@ void Algorithm::AStar(Grid* grid) {
 void Algorithm::GreedyBFS(Grid* grid) {
 
 	threadOn = true;
+	grid->ClearGridVisited();
 	bool isFinish = false;
 	std::priority_queue<Node*, std::vector<Node*>, GreedyCompare> pq;
 
@@ -333,7 +335,7 @@ void Algorithm::GreedyBFS(Grid* grid) {
 		// Obtenir les voisins
 		grid->SetNeighbourNodes(visitingNode);
 
-		for (Node* neighbor : visitingNode->GetChilds()) {
+		for (Node* neighbor : *visitingNode->GetChilds()) {
 			if (!neighbor->visited) {
 				neighbor->hCost = neighbor->manhattan_distance(
 					neighbor->positionInMatrice.x,
