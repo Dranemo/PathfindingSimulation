@@ -14,6 +14,8 @@ void InputManager::Awake()
 	eventMap[sf::Keyboard::P] = false;
 	eventMap[sf::Keyboard::B] = false;
 	eventMap[sf::Keyboard::D] = false;
+	eventMap[sf::Keyboard::A] = false;
+	eventMap[sf::Keyboard::G] = false;
 
 	mousePressed = false;
 	windowClosed = false;
@@ -57,6 +59,16 @@ void InputManager::Update()
 			{
 				eventMap[sf::Keyboard::D] = true;
 			}
+
+			if (event.key.code == sf::Keyboard::A)
+			{
+				eventMap[sf::Keyboard::A] = true;
+			}
+
+			if (event.key.code == sf::Keyboard::G)
+			{
+				eventMap[sf::Keyboard::G] = true;
+			}
 		}
 		if (event.type == sf::Event::KeyReleased)
 		{
@@ -74,6 +86,16 @@ void InputManager::Update()
 			if (event.key.code == sf::Keyboard::D)
 			{
 				eventMap[sf::Keyboard::D] = false;
+			}
+
+			if (event.key.code == sf::Keyboard::A)
+			{
+				eventMap[sf::Keyboard::A] = false;
+			}
+
+			if (event.key.code == sf::Keyboard::G)
+			{
+				eventMap[sf::Keyboard::G] = false;
 			}
 		}
 	}

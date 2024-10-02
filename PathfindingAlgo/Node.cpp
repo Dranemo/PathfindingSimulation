@@ -8,6 +8,9 @@ Node::Node(int i, int ii) {
 	square->setFillColor(sf::Color::White);
 
 	weight = 1;
+	gCost = 0;
+	hCost = 0;
+	fCost = 0;
 	positionInMatrice = sf::Vector2i(i, ii);
 	square->setPosition((i)*sizeNode.x, (ii)*sizeNode.y);
 }
