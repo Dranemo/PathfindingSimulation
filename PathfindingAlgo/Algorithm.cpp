@@ -15,9 +15,13 @@ struct DijkstraCompare {
 };
 struct AStarCompare {
 	bool operator()(Node* a, Node* b) {
-		return a->fCost > b->fCost;
+		if (a->fCost == b->fCost) {
+			return a->hCost > b->hCost; 
+		}
+		return a->fCost > b->fCost; 
 	}
 };
+
 struct GreedyCompare {
 	bool operator()(Node* a, Node* b) {
 		return a->hCost > b->hCost;
