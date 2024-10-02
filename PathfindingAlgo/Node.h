@@ -28,6 +28,10 @@ public:
 	Node(int i, int ii);
 
 	void Update();
+  
+	int manhattan_distance(int x1, int y1, int x2, int y2) {
+		return abs(x1 - x2) + abs(y1 - y2);
+	}
 
 	void SetState(State state) {
 		this->state = state;
@@ -40,6 +44,9 @@ public:
 	std::vector<Node*>* GetChilds() { return &childs; }
 
 	float weight;
+	int gCost;
+	int hCost;
+	int fCost;
 	sf::RectangleShape* square;
 	sf::Vector2i positionInMatrice;
 };

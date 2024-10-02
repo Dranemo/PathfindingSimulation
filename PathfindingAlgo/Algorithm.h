@@ -27,5 +27,9 @@ public:
 	static void BFS(Grid* grid);
 
 	static void Dijkstra(Grid* grid);
+
+	static void AStar(Grid* grid);
+
+	static void GreedyBFS(Grid* grid);
 };
 
