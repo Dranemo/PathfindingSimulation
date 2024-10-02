@@ -2,9 +2,19 @@
 #include "Grid.h"
 #include "Node.h"
 
+
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <algorithm>
+
+#include "Stack.h"
+#include <queue>
+#include <set>
+
+
 Node* Algorithm::visitingNode = nullptr;
 bool Algorithm::threadOn = false;
-std::vector<Node*> Algorithm::serchingQueue;
 std::vector<Node*> Algorithm::path;
 int Algorithm::speed = 50;
 
@@ -17,50 +27,70 @@ struct DijkstraCompare {
 
 void Algorithm::DFS(Grid* grid) {
 	threadOn = true;
-	grid->ClearGridVisited();
 
-	visitingNode = grid->GetStartNode();
-	grid->SetNeighbourNodes(visitingNode);
+	Stack<Node*> stack;
+	std::set<Node*> enTraitement;
+
+
+
+	stack.push(grid->GetStartNode());
+	//enTraitement.insert(grid->GetStartNode());  // Marque comme en traitement
+
+
+
+
 
 	// Calcul du path (affichage vert)
-	while (visitingNode != grid->GetFinishNode()) {
-		visitingNode->visited = true;
+	while (visitingNode != grid->GetFinishNode() && !stack.empty()) {
 
 
-		if (!visitingNode->GetChilds()->empty()) {
-			bool allVisited = true;
 
-			// Vérifier qu'il n'est pas déjà présent dans la queue et que c'est un noeud non visité
-			for (Node* n : *visitingNode->GetChilds()) {
-				if (!n->visited) {
+		visitingNode = stack.top();												// Prend le dernier élément
+		grid->SetNeighbourNodes(visitingNode);									// Met les childs
+		visitingNode->visited = true;											// Met en visited
 
-					serchingQueue.push_back(n);
-					allVisited = false;
+		// Suppression des listes
+		stack.pop();															// Supprime de la stack
+		if (enTraitement.find(visitingNode) != enTraitement.end())				
+			enTraitement.erase(visitingNode);									// Supprime de la liste en cours
+
+
+
+
+		bool allVisited = true;
+		// Vérifier qu'il n'est pas déjà présent dans la queue et que c'est un noeud non visité
+		for (Node* n : *visitingNode->GetChilds()) {
+			if (!n->visited) {
+
+				if (enTraitement.find(n) != enTraitement.end()) {
+					enTraitement.erase(n);
+					stack.pop_inside(n);
 				}
+
+				stack.push(n);
+
+				// Set parent
+				if (visitingNode != nullptr)
+					n->SetParent(visitingNode);
+
+				enTraitement.insert(n);
+
+				allVisited = false;
 			}
-
-			if (!allVisited) {
-				Node* newNode = serchingQueue[serchingQueue.size() - 1];
-
-				newNode->SetParent(visitingNode);
-				grid->SetNeighbourNodes(newNode);
-
-				visitingNode = newNode;
-
-				std::this_thread::sleep_for(std::chrono::milliseconds(speed));
-			}
-			else {
-				visitingNode = visitingNode->GetParent();
-				serchingQueue.pop_back();
-			}
-
-
 		}
 
+		// S'ils sont tous visités, ne pas attendre pour revenir a la cellule d'avant
+		if (!allVisited) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(speed));
+		}
 	}
+
 
 	CalculatePath(grid);
 	ShowPath();
+
+	enTraitement.clear();
+	stack.clear();
 	Reset();
 
 	std::cout << "DFS Finished \n";
@@ -69,56 +99,57 @@ void Algorithm::DFS(Grid* grid) {
 
 void Algorithm::BFS(Grid* grid) {
 	threadOn = true;
-	grid->ClearGridVisited();
 
-	visitingNode = grid->GetStartNode();
-	grid->SetNeighbourNodes(visitingNode);
-	visitingNode->visited = true;
 
-	int i = 0;
+	std::queue<Node*> queue;
+	std::set<Node*> enTraitement;
 
-	while (visitingNode != grid->GetFinishNode()) {
+	queue.push(grid->GetStartNode());
 
-		if (!visitingNode->GetChilds()->empty()) {
 
-			// Vérifier qu'il n'est pas déjà présent dans la queue et que c'est un noeud non visité
-			for (Node* n : *visitingNode->GetChilds()) {
 
-				if (n->GetState() == Node::wall) {
-					std::cout << "euh" << std::endl;
-				}
+	while (visitingNode != grid->GetFinishNode() && !queue.empty()) {
 
-				if (!n->visited) {
+		visitingNode = queue.front();											// Prend le dernier élément
+		grid->SetNeighbourNodes(visitingNode);									// Met les childs
+		visitingNode->visited = true;											// Met en visited
 
-					auto it = std::find(serchingQueue.begin(), serchingQueue.end(), n);
+		// Suppression des listes
+		queue.pop();															// Supprime de la queue
 
-					if (it == serchingQueue.end()) {
-						serchingQueue.push_back(n);
-						n->SetParent(visitingNode);
-					}					
-				}
+		bool suppressing = true;
+		while (suppressing) {
+
+			if (enTraitement.find(visitingNode) != enTraitement.end())
+				enTraitement.erase(visitingNode);
+			else {
+				suppressing = false;
 			}
-
-			
-
-
-
-
-
-			Node* newNode = serchingQueue[i];
-
-			//newNode->SetParent(visitingNode);
-			grid->SetNeighbourNodes(newNode);
-
-			visitingNode = newNode;
-			if (visitingNode != grid->GetFinishNode() && visitingNode != grid->GetStartNode())
-				visitingNode->visited = true;
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(speed));
-
 		}
 
-		i++;
+
+
+
+		// Vérifier qu'il n'est pas déjà présent dans la queue et que c'est un noeud non visité
+		for (Node* n : *visitingNode->GetChilds()) {
+
+			if (!n->visited) {
+
+				if (enTraitement.find(n) == enTraitement.end()) {
+					queue.push(n);
+					enTraitement.insert(n);
+
+
+					// Set parent
+					if (visitingNode != nullptr)
+						n->SetParent(visitingNode);
+				}
+			}
+		}
+
+		if (!queue.front()->visited) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(speed));
+		}
 	}
 
 	CalculatePath(grid);
@@ -199,7 +230,6 @@ void Algorithm::ShowPath() {
 }
 
 void Algorithm::Reset() {
-	serchingQueue.clear();
 	path.clear();
 
 	threadOn = false;

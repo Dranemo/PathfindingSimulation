@@ -3,6 +3,7 @@
 #include "InputManager.h"
 
 #include <thread>
+#include <iostream>
 
 Grid::Grid() {
 	wm = WindowManager::GetInstance();

@@ -1,10 +1,6 @@
 #pragma once
 #include <vector>
-#include <thread>
-#include <chrono>
-#include <algorithm>
-#include <iostream>
-#include <queue>
+
 
 class Grid;
 class Node;
@@ -13,7 +9,6 @@ class Node;
 class Algorithm
 {
 private:
-	static std::vector<Node*> serchingQueue;
 	static Node* visitingNode;
 
 	static std::vector<Node*> path;
