@@ -32,6 +32,7 @@ public:
 	void SetFinishNode(int x, int y);
 
 	void ClearGrid();
+	void ClearWall();
 	void ClearGridVisited();
 
 	void SetNeighbourNodes(Node* node);

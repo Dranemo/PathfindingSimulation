@@ -53,6 +53,7 @@ void Grid::SetFinishNode(int x, int y) {
 void Grid::ClearGrid() {
 	for (std::vector<Node*> v : grid) {
 		for (Node* n : v) {
+			n->visited = false;
 			n->SetState(Node::defaultState);
 
 			n->GetChilds()->clear();
@@ -61,9 +62,22 @@ void Grid::ClearGrid() {
 	}
 
 	startNode->SetState(Node::start);
+	SetStartNode(1, 1);
 	finishNode->SetState(Node::finish);
+	SetFinishNode(rowsNum - 2, ColNums - 2);
+}
 
+void Grid::ClearWall() {
+	for (std::vector<Node*> v : grid) {
+		for (Node* n : v) {
+			if (n->GetState() == Node::wall) {
+				n->SetState(Node::defaultState);
+			}
 
+			n->GetChilds()->clear();
+			n->SetParent(nullptr);
+		}
+	}
 }
 
 void Grid::ClearGridVisited() {

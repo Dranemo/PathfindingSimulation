@@ -17,6 +17,8 @@ public:
 
 	void Update();
 
+	void CheckIfButtonPressed(std::vector<Button*> _buttons);
+
 private:
 
 	std::vector<Button*> buttons;

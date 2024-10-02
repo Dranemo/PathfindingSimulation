@@ -25,7 +25,6 @@ Button::Button(sf::Vector2f _size, sf::Vector2f _position, sf::Color _color, std
 }
 
 
-
 bool Button::Update(sf::Vector2i _mousePos)
 {
 	if (_mousePos.x >= bounds.left && _mousePos.x <= bounds.left + bounds.width && _mousePos.y >= bounds.top && _mousePos.y <= bounds.top + bounds.height)
