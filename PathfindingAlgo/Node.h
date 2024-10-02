@@ -29,9 +29,6 @@ public:
 
 	void Update();
 
-
-	
-
 	void SetState(State state) {
 		this->state = state;
 	}
@@ -40,7 +37,7 @@ public:
 	void SetParent(Node* parent) { this->parent = parent; }
 	void AddChild(Node* child) { childs.push_back(child); }
 	Node* GetParent() { return parent; }
-	std::vector<Node*> GetChilds() { return childs; }
+	std::vector<Node*>* GetChilds() { return &childs; }
 
 	float weight;
 	sf::RectangleShape* square;
