@@ -18,10 +18,12 @@ private:
 	bool movingFinish = false;
 	bool creatingWalls = false;
 
+
 public:
 	int rowsNum = WindowManager::windowSize.x / Node::sizeNode.x;
 	int ColNums = WindowManager::windowSize.y / Node::sizeNode.y;
 	std::vector<std::vector<Node*>> grid;
+	int speed = 50;
 
 	Node* GetStartNode() { return startNode; }
 	Node* GetFinishNode() { return finishNode; }
@@ -30,6 +32,7 @@ public:
 	void SetFinishNode(int x, int y);
 
 	void ClearGrid();
+	void ClearWall();
 	void ClearGridVisited();
 
 	void SetNeighbourNodes(Node* node);

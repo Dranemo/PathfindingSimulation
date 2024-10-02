@@ -7,6 +7,7 @@ class WindowManager
 private:
 
 	std::vector<sf::Drawable*> drawables;
+	std::vector<sf::Text*> texts;
 	std::vector<sf::Vertex> lines;
 
 	static WindowManager* instance;
@@ -29,5 +30,6 @@ public:
 	void AddDrawable(sf::Drawable* drawable);
 	sf::Drawable* GetDrawable(int i);
 	void AddLine(sf::Vector2f pA, sf::Vector2f pB);
+	void AddText(sf::Text* text);
 };
 

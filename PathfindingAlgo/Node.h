@@ -28,8 +28,7 @@ public:
 	Node(int i, int ii);
 
 	void Update();
-
-
+  
 	int manhattan_distance(int x1, int y1, int x2, int y2) {
 		return abs(x1 - x2) + abs(y1 - y2);
 	}
@@ -42,7 +41,7 @@ public:
 	void SetParent(Node* parent) { this->parent = parent; }
 	void AddChild(Node* child) { childs.push_back(child); }
 	Node* GetParent() { return parent; }
-	std::vector<Node*> GetChilds() { return childs; }
+	std::vector<Node*>* GetChilds() { return &childs; }
 
 	float weight;
 	int gCost;
