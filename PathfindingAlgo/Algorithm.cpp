@@ -403,117 +403,73 @@ void Algorithm::AStarTest(Grid* grid) {
 	isFinished = false;
 	grid->ClearGridVisited();
 
-	auto compare = [](Node* a, Node* b) { 
+	auto compare = [](Node* a, Node* b) {
 		if (a->fCost == b->fCost)
 			return a->hCost > b->hCost;
-		return a->fCost > b->fCost; 
-	};
+		return a->fCost > b->fCost;
+		};
 
 	Priority_Queue<Node*, std::vector<Node*>, decltype(compare)> queue(compare);
 	std::set<Node*> enTraitement;
 
-
 	Node* startNode = grid->GetStartNode();
 	Node* finishNode = grid->GetFinishNode();
-	queue.push(startNode);
+
+	// Set les costs du départ
 	startNode->gCost = 0;
+	startNode->hCost = manhattan_distance(startNode->positionInMatrice.x, startNode->positionInMatrice.y, finishNode->positionInMatrice.x, finishNode->positionInMatrice.y);
+	startNode->fCost = startNode->gCost + startNode->hCost;
+	queue.push(startNode);
 
-
-
+	// Tant que c'est pas fini
 	while (!isFinished && !queue.empty()) {
+		visitingNode = queue.top();
+		queue.pop();
 
-		visitingNode = queue.top();												// Prend le premier élément
-		queue.pop();															// Supprime de la queue
-
-
-		grid->SetNeighbourNodes(visitingNode);									// Met les childs
-		visitingNode->visited = true;											// Met en visited
-
-		// Suppression des listes
-
-		bool suppressing = true;												// l'enleve de la liste en traitement
-		while (suppressing) {
-
-			if (enTraitement.find(visitingNode) != enTraitement.end())
-				enTraitement.erase(visitingNode);
-			else {
-				suppressing = false;
-			}
-		}
-
-		if (visitingNode->positionInMatrice.x == 1 && visitingNode->positionInMatrice.y == 2) {
-			std::cout << "";
-			std::cout << "";
-		}
-
-
-
-		for (Node* n : *visitingNode->GetChilds()) {						// Boucle for pour tous les childs
-			if (!n->visited) {
-
-
-				if (n->GetParent() != nullptr) {							// Si le node a un paretn, c'est qu'il est déjà passé dans la queue
-					if (compare(n->GetParent(), visitingNode)) {			// On compare, si le parent actuel a un f ou h cost plus grand, return true
-						n->SetParent(visitingNode);							// On met le parent sur la node qu'on visite parce qu'elle est plus opti
-						n->gCost = visitingNode->gCost + 1;					// On met a jour le g cost
-					}
-				}
-				else {														// Si le node n'a pas de parent, c'est que c'est la premiere fois qu'on le croise
-					n->SetParent(visitingNode);								// Met le parent sur la node voisine qu'on visite
-					n->gCost = visitingNode->gCost + 1;						// Update le gcost
-				}
-
-
-				n->hCost = manhattan_distance(n->positionInMatrice.x, n->positionInMatrice.y, finishNode->positionInMatrice.x, finishNode->positionInMatrice.y);
-				n->fCost = n->hCost + n->gCost;
-
-
-
-
-
-				if (enTraitement.find(n) != enTraitement.end()) {			// S'il est déjà dans la  liste enTraitement, 
-					queue.sort();											// Sort la queue après avoir màj les costs
-				}
-				else {														// Sinon
-					queue.push(n);											// Le mettre dans la queue
-					enTraitement.insert(n);									// Le mettre dna sla liste
-				}
-
-
-
-			}
-		}
-
-
-
-		if (!queue.empty()) {
-			if (!queue.top()->visited) {
-				std::this_thread::sleep_for(std::chrono::milliseconds(speed));
-			}
-		}
-
-
+		// Savoir si c'est fini
 		if (visitingNode->GetState() == Node::finish) {
 			isFinished = true;
 			break;
 		}
+
+		// Mettre les voisins
+		grid->SetNeighbourNodes(visitingNode);
+		visitingNode->visited = true;
+
+
+		// Check pour chaque voisins
+		for (Node* neighbor : *visitingNode->GetChilds()) {
+
+			// Vérifier qu'il soit pas visité
+			if (!neighbor->visited) {
+				int tentativeGCost = visitingNode->gCost + 1; // 1 = distance entre 2 nodes
+				if (tentativeGCost < neighbor->gCost || !enTraitement.count(neighbor)) { // Si le nouveau gCost est plus petit que l'ancien ou que le noeud n'est pas en traitement (= pas encore voisin d'un autre / ave cun chemin plus court)
+					
+					// Màj des costs et parent
+					neighbor->SetParent(visitingNode);
+					neighbor->gCost = tentativeGCost;
+					neighbor->hCost = manhattan_distance(neighbor->positionInMatrice.x, neighbor->positionInMatrice.y, finishNode->positionInMatrice.x, finishNode->positionInMatrice.y);
+					neighbor->fCost = neighbor->gCost + neighbor->hCost;
+
+					// S'il est déjà dans la lsite, pas besoin de le rajouter
+					if (!enTraitement.count(neighbor)) {
+						queue.push(neighbor);
+						enTraitement.insert(neighbor);
+					}
+					//queue.sort();
+				}
+			}
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(speed));
 	}
 
-
-
-
-
 	CalculatePath(grid);
-
-	enTraitement.clear();
-	while (!queue.empty())
-		queue.pop();
 	ShowPath();
 	Reset();
 
 	std::cout << "A* test Finished \n";
 }
-
 
 
 
