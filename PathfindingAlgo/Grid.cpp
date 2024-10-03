@@ -4,6 +4,8 @@
 
 #include <thread>
 #include <iostream>
+#include <unordered_map>
+#include <unordered_set>
 
 Grid::Grid() {
 	wm = WindowManager::GetInstance();
@@ -74,7 +76,7 @@ void Grid::ClearWall() {
 			if (n->GetState() == Node::wall) {
 				n->SetState(Node::defaultState);
 			}
-
+			n->visited = false;
 			n->GetChilds()->clear();
 			n->SetParent(nullptr);
 		}
@@ -242,4 +244,92 @@ void Grid::SetNeighbourNodes(Node* node) {
 	for (Node * n : returnVector) {
 		node->AddChild(n);
 	}
+}
+
+void Grid::SpawnRandomWall() 
+{
+	Algorithm::threadOn = true;
+	ClearWall();
+
+	std::vector<Node*> random_path;
+	random_path.push_back(startNode);
+	startNode->visited = true;
+	Node* actualNode = random_path[random_path.size() - 1];
+	SetNeighbourNodes(actualNode);
+
+	while (actualNode->GetState() != Node::finish)
+	{
+		Node* next = GetRandomNeighborNode(actualNode);
+
+		if (next != nullptr)
+		{
+			random_path.push_back(next);
+			actualNode = next;
+			SetNeighbourNodes(actualNode);
+		}
+		else {
+			random_path.pop_back();
+			actualNode = random_path[random_path.size() - 1];
+		}
+	}
+
+	for (int i = 0; i < rowsNum; ++i) {
+		for (int j = 0; j < ColNums; ++j) {
+			if (std::find(random_path.begin(), random_path.end(), grid[i][j]) == random_path.end()) {
+				if (i > 0 && j > 0) {
+					if (!(grid[i - 1][j]->GetState() == Node::wall && grid[i][j - 1]->GetState() == Node::wall && grid[i - 1][j - 1]->GetState() == Node::wall)) {
+						if (grid[i - 1][j]->GetState() == Node::defaultState && grid[i][j - 1]->GetState() == Node::defaultState && grid[i - 1][j - 1]->GetState() == Node::defaultState) {
+							grid[i][j]->SetState(Node::wall);
+						}
+						else {
+							std::mt19937 gen(rd());
+							std::uniform_int_distribution<> distrib(0, 1);
+							int random_number = distrib(gen);
+
+							if (random_number == 0) {
+								grid[i][j]->SetState(Node::wall);
+							}
+						}
+					}
+				}
+				else {
+					std::mt19937 gen(rd());
+					std::uniform_int_distribution<> distrib(0, 1);
+					int random_number = distrib(gen);
+
+					if (random_number == 0) {
+						grid[i][j]->SetState(Node::wall);
+					}
+				}
+			}
+		}
+	}
+	ClearGridVisited();
+
+	Algorithm::threadOn = false;
+}
+
+Node* Grid::GetRandomNeighborNode(Node* _node) 
+{
+	std::vector<Node*> possibly_neighbor;
+	for (Node* neighbor : *_node->GetChilds()) {
+		if (neighbor->GetState() == Node::finish) {
+			return neighbor;
+		}
+		if (!neighbor->visited) {
+			possibly_neighbor.push_back(neighbor);
+		}
+	}
+
+	if (possibly_neighbor.size() != 0) {
+		std::mt19937 gen(rd()); 
+		std::uniform_int_distribution<> distrib(0, possibly_neighbor.size() - 1);
+
+		int random_number = distrib(gen);
+		
+		possibly_neighbor[random_number]->visited = true;
+		return possibly_neighbor[random_number];
+	}
+
+	return nullptr;
 }
