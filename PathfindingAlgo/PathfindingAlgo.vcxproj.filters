@@ -33,12 +33,9 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-<<<<<<< HEAD
-=======
     <ClCompile Include="AStar.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
->>>>>>> 73f9f4607a762348a0f267d8bee6a5f0c5923235
     <ClCompile Include="Stack.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -65,12 +62,9 @@
     <ClInclude Include="InputManager.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-<<<<<<< HEAD
-=======
     <ClInclude Include="Astar.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
->>>>>>> 73f9f4607a762348a0f267d8bee6a5f0c5923235
     <ClInclude Include="Stack.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
