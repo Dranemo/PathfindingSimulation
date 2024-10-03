@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "WindowManager.h"
 #include <vector>
+#include <random>
 
 class Grid
 {
@@ -17,6 +18,8 @@ private:
 	bool movingStart = false;
 	bool movingFinish = false;
 	bool creatingWalls = false;
+
+	std::random_device rd;
 
 
 public:
@@ -41,5 +44,11 @@ public:
 	void Update();
 
 	Grid();
+
+	void SpawnRandomWall();
+	Node* GetRandomNeighborNode(Node* _node);
+
+	void WilsonAlgorithm();
+	Node* GetRandomNeighbor(Node* node);
 };
 
