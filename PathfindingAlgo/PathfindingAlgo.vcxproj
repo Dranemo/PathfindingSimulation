@@ -144,7 +144,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Algorithm.cpp" />
-    <ClCompile Include="AStar.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -156,7 +155,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
-    <ClInclude Include="Astar.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="InputManager.h" />

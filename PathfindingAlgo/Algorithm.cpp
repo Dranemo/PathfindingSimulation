@@ -14,9 +14,14 @@
 
 
 Node* Algorithm::visitingNode = nullptr;
+bool Algorithm::isFinished = false;
 bool Algorithm::threadOn = false;
 std::vector<Node*> Algorithm::path;
 int Algorithm::speed = 50;
+
+
+
+
 
 struct DijkstraCompare {
 	bool operator()(Node* a, Node* b) {
@@ -38,8 +43,15 @@ struct GreedyCompare {
 	}
 };
 
+
+
+
+
+
+
 void Algorithm::DFS(Grid* grid) {
 	threadOn = true;
+	isFinished = false;
 	grid->ClearGridVisited();
 
 	Stack<Node*> stack;
@@ -50,7 +62,7 @@ void Algorithm::DFS(Grid* grid) {
 
 
 	// Calcul du path (affichage vert)
-	while (visitingNode != grid->GetFinishNode() && !stack.empty()) {
+	while (!isFinished && !stack.empty()) {
 
 
 
@@ -92,6 +104,12 @@ void Algorithm::DFS(Grid* grid) {
 		if (!allVisited) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(speed));
 		}
+
+
+		if (visitingNode->GetState() == Node::finish) {
+			isFinished = true;
+			break;
+		}
 	}
 
 
@@ -108,6 +126,7 @@ void Algorithm::DFS(Grid* grid) {
 
 void Algorithm::BFS(Grid* grid) {
 	threadOn = true;
+	isFinished = false;
 	grid->ClearGridVisited();
 
 
@@ -118,7 +137,7 @@ void Algorithm::BFS(Grid* grid) {
 
 
 
-	while (visitingNode != grid->GetFinishNode() && !queue.empty()) {
+	while (!isFinished && !queue.empty()) {
 
 		visitingNode = queue.front();											// Prend le dernier élément
 		grid->SetNeighbourNodes(visitingNode);									// Met les childs
@@ -157,8 +176,15 @@ void Algorithm::BFS(Grid* grid) {
 			}
 		}
 
-		if (!queue.front()->visited) {
-			std::this_thread::sleep_for(std::chrono::milliseconds(speed));
+		if (!queue.empty()) {
+			if (!queue.front()->visited) {
+				std::this_thread::sleep_for(std::chrono::milliseconds(speed));
+			}
+		}
+
+		if (visitingNode->GetState() == Node::finish) {
+			isFinished = true;
+			break;
 		}
 	}
 
@@ -179,7 +205,7 @@ void Algorithm::Dijkstra(Grid* grid)
 {
 	threadOn = true;
 	grid->ClearGridVisited();
-	bool isFinish = false;
+	isFinished = false;
 	std::priority_queue<Node*, std::vector<Node*>, DijkstraCompare> pq;
 
 
@@ -192,7 +218,7 @@ void Algorithm::Dijkstra(Grid* grid)
 	WindowManager* windowManager = WindowManager::GetInstance();
 
 
-	while (!pq.empty() && !isFinish) {
+	while (!pq.empty() && !isFinished) {
 		visitingNode = pq.top();
 		pq.pop();
 
@@ -205,7 +231,7 @@ void Algorithm::Dijkstra(Grid* grid)
 				neighbor->weight = newCost;
 				neighbor->SetParent(visitingNode);
 				if (neighbor->GetState() == Node::finish) {
-					isFinish = true;
+					isFinished = true;
 					break;
 				}
 				else {
@@ -235,11 +261,14 @@ void Algorithm::CalculatePath(Grid* grid) {
 
 void Algorithm::ShowPath() {
 	// Affichage du path
-	for (int i = path.size() - 1; i >= 0; i--) {
-		if (path[i]->GetState() != Node::start && path[i]->GetState() != Node::finish)
-			path[i]->SetState(Node::path);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(speed));
+	if (isFinished) {
+		for (int i = path.size() - 1; i >= 0; i--) {
+			if (path[i]->GetState() != Node::start && path[i]->GetState() != Node::finish)
+				path[i]->SetState(Node::path);
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(speed));
+		}
 	}
 }
 
@@ -253,7 +282,7 @@ void Algorithm::AStar(Grid* grid) {
 	
 	threadOn = true;
 	grid->ClearGridVisited();
-	bool isFinish = false;
+	isFinished = false;
 	std::priority_queue<Node*, std::vector<Node*>, AStarCompare> pq;
 
 	visitingNode = grid->GetStartNode();
@@ -264,7 +293,7 @@ void Algorithm::AStar(Grid* grid) {
 	WindowManager* windowManager = WindowManager::GetInstance();
 
 
-	while (!pq.empty() && !isFinish) {
+	while (!pq.empty() && !isFinished) {
 		visitingNode = pq.top();
 		pq.pop();
 
@@ -273,19 +302,19 @@ void Algorithm::AStar(Grid* grid) {
 
 		for (Node* neighbor : *visitingNode->GetChilds()) {
 			if (!neighbor->visited) {
-				neighbor->gCost = neighbor->manhattan_distance(
+				neighbor->gCost = manhattan_distance(
 					neighbor->positionInMatrice.x,
 					neighbor->positionInMatrice.y,
 					grid->GetStartNode()->positionInMatrice.x,
 					grid->GetStartNode()->positionInMatrice.y
 				);
-				float newGCost = visitingNode->gCost + neighbor->manhattan_distance(
+				float newGCost = visitingNode->gCost + manhattan_distance(
 					neighbor->positionInMatrice.x,
 					neighbor->positionInMatrice.y,
 					visitingNode->positionInMatrice.x,
 					visitingNode->positionInMatrice.y
 				);
-				neighbor->hCost = neighbor->manhattan_distance(
+				neighbor->hCost = manhattan_distance(
 					neighbor->positionInMatrice.x,
 					neighbor->positionInMatrice.y,
 					grid->GetFinishNode()->positionInMatrice.x,
@@ -295,7 +324,7 @@ void Algorithm::AStar(Grid* grid) {
 				neighbor->fCost = neighbor->gCost + neighbor->hCost;
 				neighbor->SetParent(visitingNode);
 				if (neighbor->GetState() == Node::finish) {
-					isFinish = true;
+					isFinished = true;
 					break;
 				}
 				else {
@@ -318,7 +347,7 @@ void Algorithm::GreedyBFS(Grid* grid) {
 
 	threadOn = true;
 	grid->ClearGridVisited();
-	bool isFinish = false;
+	isFinished = false;
 	std::priority_queue<Node*, std::vector<Node*>, GreedyCompare> pq;
 
 	visitingNode = grid->GetStartNode();
@@ -328,7 +357,7 @@ void Algorithm::GreedyBFS(Grid* grid) {
 	WindowManager* windowManager = WindowManager::GetInstance();
 
 
-	while (!pq.empty() && !isFinish) {
+	while (!pq.empty() && !isFinished) {
 		visitingNode = pq.top();
 		pq.pop();
 
@@ -337,7 +366,7 @@ void Algorithm::GreedyBFS(Grid* grid) {
 
 		for (Node* neighbor : *visitingNode->GetChilds()) {
 			if (!neighbor->visited) {
-				neighbor->hCost = neighbor->manhattan_distance(
+				neighbor->hCost = manhattan_distance(
 					neighbor->positionInMatrice.x,
 					neighbor->positionInMatrice.y,
 					grid->GetFinishNode()->positionInMatrice.x,
@@ -345,7 +374,7 @@ void Algorithm::GreedyBFS(Grid* grid) {
 				);
 				neighbor->SetParent(visitingNode);
 				if (neighbor->GetState() == Node::finish) {
-					isFinish = true;
+					isFinished = true;
 					break;
 				}
 				else {
@@ -364,3 +393,14 @@ void Algorithm::GreedyBFS(Grid* grid) {
 
 	std::cout << "Greedy BFS Finished \n";
 }
+
+
+
+
+
+
+
+
+
+
+

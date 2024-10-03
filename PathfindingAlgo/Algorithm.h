@@ -10,6 +10,7 @@ class Algorithm
 {
 private:
 	static Node* visitingNode;
+	static bool isFinished;
 	
 
 	static std::vector<Node*> path;
@@ -17,6 +18,10 @@ private:
 	static void CalculatePath(Grid* grid);
 	static void ShowPath();
 	static void Reset();
+
+	static int manhattan_distance(int x1, int y1, int x2, int y2) {
+		return abs(x1 - x2) + abs(y1 - y2);
+	}
 
 public:
 	static bool threadOn;
