@@ -398,9 +398,78 @@ void Algorithm::GreedyBFS(Grid* grid) {
 
 
 
+void Algorithm::AStarTest(Grid* grid) {
+	threadOn = true;
+	isFinished = false;
+	grid->ClearGridVisited();
+
+	auto compare = [](Node* a, Node* b) {
+		if (a->fCost == b->fCost)
+			return a->hCost > b->hCost;
+		return a->fCost > b->fCost;
+		};
+
+	Priority_Queue<Node*, std::vector<Node*>, decltype(compare)> queue(compare);
+	std::set<Node*> enTraitement;
+
+	Node* startNode = grid->GetStartNode();
+	Node* finishNode = grid->GetFinishNode();
+
+	// Set les costs du départ
+	startNode->gCost = 0;
+	startNode->hCost = manhattan_distance(startNode->positionInMatrice.x, startNode->positionInMatrice.y, finishNode->positionInMatrice.x, finishNode->positionInMatrice.y);
+	startNode->fCost = startNode->gCost + startNode->hCost;
+	queue.push(startNode);
+
+	// Tant que c'est pas fini
+	while (!isFinished && !queue.empty()) {
+		visitingNode = queue.top();
+		queue.pop();
+
+		// Savoir si c'est fini
+		if (visitingNode->GetState() == Node::finish) {
+			isFinished = true;
+			break;
+		}
+
+		// Mettre les voisins
+		grid->SetNeighbourNodes(visitingNode);
+		visitingNode->visited = true;
 
 
+		// Check pour chaque voisins
+		for (Node* neighbor : *visitingNode->GetChilds()) {
 
+			// Vérifier qu'il soit pas visité
+			if (!neighbor->visited) {
+				int tentativeGCost = visitingNode->gCost + 1; // 1 = distance entre 2 nodes
+				if (tentativeGCost < neighbor->gCost || !enTraitement.count(neighbor)) { // Si le nouveau gCost est plus petit que l'ancien ou que le noeud n'est pas en traitement (= pas encore voisin d'un autre / ave cun chemin plus court)
+					
+					// Màj des costs et parent
+					neighbor->SetParent(visitingNode);
+					neighbor->gCost = tentativeGCost;
+					neighbor->hCost = manhattan_distance(neighbor->positionInMatrice.x, neighbor->positionInMatrice.y, finishNode->positionInMatrice.x, finishNode->positionInMatrice.y);
+					neighbor->fCost = neighbor->gCost + neighbor->hCost;
+
+					// S'il est déjà dans la lsite, pas besoin de le rajouter
+					if (!enTraitement.count(neighbor)) {
+						queue.push(neighbor);
+						enTraitement.insert(neighbor);
+					}
+					//queue.sort();
+				}
+			}
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(speed));
+	}
+
+	CalculatePath(grid);
+	ShowPath();
+	Reset();
+
+	std::cout << "A* test Finished \n";
+}
 
 
 

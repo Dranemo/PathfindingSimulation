@@ -36,5 +36,10 @@ public:
 	static void AStar(Grid* grid);
 
 	static void GreedyBFS(Grid* grid);
+
+
+
+
+	static void AStarTest(Grid* grid);
 };
 

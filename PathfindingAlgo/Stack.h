@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <queue>
 
 
 
@@ -30,3 +31,19 @@ public:
 	}
 };
 
+template <class _Ty, class _Container = std::vector<_Ty>, class _Pr = std::less<typename _Container::value_type>>
+class Priority_Queue : public std::priority_queue<_Ty, _Container, _Pr>
+{
+public:
+	explicit Priority_Queue(const _Pr& _Pred) noexcept : std::priority_queue<_Ty, _Container, _Pr>(_Pred)
+	{
+
+	}
+
+
+
+
+	void sort() {
+		std::make_heap(this->c.begin(), this->c.end());
+	}
+};
