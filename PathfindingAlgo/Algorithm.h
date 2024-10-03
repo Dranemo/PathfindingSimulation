@@ -40,6 +40,6 @@ public:
 
 
 
-	static void AStarTest(Grid* grid);
+	static void AStar2(Grid* grid);
 };
 

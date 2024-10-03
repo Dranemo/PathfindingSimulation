@@ -398,7 +398,7 @@ void Algorithm::GreedyBFS(Grid* grid) {
 
 
 
-void Algorithm::AStarTest(Grid* grid) {
+void Algorithm::AStar2(Grid* grid) {
 	threadOn = true;
 	isFinished = false;
 	grid->ClearGridVisited();
