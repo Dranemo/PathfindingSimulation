@@ -11,7 +11,8 @@ Menu::Menu(Grid* _grid)
 	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 25), sf::Color::Color(0,0, 255), "DFS", sf::Color::White, 40, std::bind(&Algorithm::DFS, grid));
 	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 100), sf::Color::Color(43, 255, 255), "BFS", sf::Color::White, 40, std::bind(&Algorithm::BFS, grid));
 	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 175), sf::Color::Color(0, 128, 0), "Dijkstra", sf::Color::White, 40, std::bind(&Algorithm::Dijkstra, grid));
-	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 250), sf::Color::Color(0, 100, 200), "A*", sf::Color::White, 40, std::bind(&Algorithm::AStar, grid));
+	//CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 250), sf::Color::Color(0, 100, 200), "A*", sf::Color::White, 40, std::bind(&Algorithm::AStar, grid));
+	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 250), sf::Color::Color(0, 100, 200), "A*", sf::Color::White, 40, std::bind(&Algorithm::AStarTest, grid));
 	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 325), sf::Color::Color(0, 100, 250), "Greedy", sf::Color::White, 40, std::bind(&Algorithm::GreedyBFS, grid));
 	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 400), sf::Color::Color(0, 200, 250), "Swarm", sf::Color::White, 40, nullptr);
 
