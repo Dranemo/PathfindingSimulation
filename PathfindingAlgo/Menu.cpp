@@ -14,7 +14,6 @@ Menu::Menu(Grid* _grid)
 	//CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 250), sf::Color::Color(0, 100, 200), "A*", sf::Color::White, 40, std::bind(&Algorithm::AStar, grid));
 	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 250), sf::Color::Color(0, 100, 200), "A*", sf::Color::White, 40, std::bind(&Algorithm::AStar2, grid));
 	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 325), sf::Color::Color(0, 100, 250), "Greedy", sf::Color::White, 40, std::bind(&Algorithm::GreedyBFS, grid));
-	CreateButton(sf::Vector2f(200, 50), sf::Vector2f(950, 400), sf::Color::Color(0, 200, 250), "Swarm", sf::Color::White, 40, nullptr);
 
 	// Random Wall
 	CreateButton(sf::Vector2f(170, 50), sf::Vector2f(965, 500), sf::Color::Color(255, 165, 0), "Spawn Wall", sf::Color::White, 25, std::bind(&Grid::SpawnRandomWall, grid));
